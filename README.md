@@ -1,4 +1,4 @@
-# AI Creative Trials
+# AI Creative Trials A
 
 > 10 个 AI 作品，一个作品一个文件。双击 HTML 就能离线打开——不用服务器、不用联网、不用装依赖。
 
