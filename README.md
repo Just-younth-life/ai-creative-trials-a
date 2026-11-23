@@ -6,10 +6,10 @@
 
 | 作品 | 是什么 | 关键数据 | 入口 |
 | --- | --- | --- | --- |
-| **三思集** Sansi | 学生 / 职场人的决策 Agent：两难问题拆成两条路线 + 明确建议 | 251 条决策知识 · 16 个标签 | [sansi-agent.html](sansi-agent.html) |
-| **松间知宁** Songjian Zhining | 居家养老产品双端原型：PC 品牌官网 + H5 适老版「康伴」 | 2 端 · 9 章 PRD | [songjian-zhining.html](songjian-zhining.html) |
-| **宽序** Kuanxu | AI 社交日程管理：公开社交版 + 情侣私密版，游戏化人生地图 | 11 章 PRD · 3 层竞品分级 | [kuanxu.html](kuanxu.html) |
-| **汪独** WONGDU | Star Battle 类休闲解谜，萌宠外壳 + 严肃秘境，从策划到可复现脚本 | 32 关 · 33/33 测试 · 23 条 Bad Case · 15 份文档 | [wangdu.html](wangdu.html) · [直接试玩 game.html](game.html) |
+| **三思集** Sansi | 学生 / 职场人的决策 Agent：两难问题拆成两条路线 + 明确建议 | 251 条决策知识 · 16 个标签 | (https://github.com/Just-younth-life/ai-creative-trials-a/sansi-agent.html) |
+| **松间知宁** Songjian Zhining | 居家养老产品双端原型：PC 品牌官网 + H5 适老版「康伴」 | 2 端 · 9 章 PRD | (https://github.com/Just-younth-life/ai-creative-trials-a/songjian-zhining.html) |
+| **宽序** Kuanxu | AI 社交日程管理：公开社交版 + 情侣私密版，游戏化人生地图 | 11 章 PRD · 3 层竞品分级 | (https://github.com/Just-younth-life/ai-creative-trials-a/kuanxu.html) |
+| **汪独** WONGDU | Star Battle 类休闲解谜，萌宠外壳 + 严肃秘境，从策划到可复现脚本 | 32 关 · 33/33 测试 · 23 条 Bad Case · 15 份文档 |(https://github.com/Just-younth-life/ai-creative-trials-a/)wangdu.html) · [直接试玩 game.html](https://github.com/Just-younth-life/ai-creative-trials-a/game.html) |
 
 ## 内容 IP
 
