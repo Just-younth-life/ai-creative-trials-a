@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社会学治愈图文 · Sciology Healing｜AI Creative Trials</title>
+<meta name="description" content="用社会学的骨架，接住当下的情绪">
+<style>
+:root{
+  --accent:#a15a4a; --accent-deep:#7e463a; --accent-soft:#f6eeed; --accent-softer:#faf7f6;
+  --ink:#0e1116; --ink2:#39424f; --muted:#6b7481; --faint:#98a1ad;
+  --line:#e6e9ef; --line2:#eff1f5; --bg:#f7f8fa; --card:#ffffff;
+  --r:18px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.7;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+.top{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:22px;height:60px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.brand .logo{width:22px;height:22px;border-radius:7px;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-size:9.5px;font-weight:800;letter-spacing:.02em}
+.brand em{font-style:normal;color:var(--faint);font-weight:500}
+.top nav{display:flex;gap:20px;font-size:13.5px;color:var(--muted);margin-left:auto}
+.top nav a:hover{color:var(--ink)}
+.top .ghost{font-size:13px;color:var(--accent-deep);background:var(--accent-soft);
+  padding:7px 13px;border-radius:999px;font-weight:600;white-space:nowrap}
+.hero{position:relative;overflow:hidden;background:
+  radial-gradient(760px 320px at 12% -10%, #f6eeed 0%, rgba(255,255,255,0) 70%), #fff;
+  border-bottom:1px solid var(--line)}
+.hero .wrap{padding-top:56px;padding-bottom:38px;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-deep);font-weight:700}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
+h1{font-size:40px;line-height:1.15;letter-spacing:-.025em;margin:16px 0 0;font-weight:800}
+h1 .sub{font-size:15px;font-weight:600;color:var(--faint);letter-spacing:.02em;
+  margin-left:12px;vertical-align:2px;font-family:var(--mono)}
+.tagline{margin-top:12px;font-size:19px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.lede{margin-top:12px;max-width:760px;font-size:15.5px;color:var(--ink2);line-height:1.85}
+.stats{display:flex;flex-wrap:wrap;gap:34px;margin-top:30px;list-style:none}
+.stats li{display:flex;flex-direction:column;gap:2px;min-width:88px}
+.stats b{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.stats span{font-size:12.5px;color:var(--muted)}
+.hero-acts{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.hero-acts a{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;
+  padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;
+  color:var(--ink);transition:.18s}
+.hero-acts a:hover{border-color:var(--accent);color:var(--accent-deep)}
+.hero-acts a.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hero-acts a.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+.tabbar{position:sticky;top:60px;z-index:50;background:rgba(247,248,250,.92);
+  backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:6px;padding:12px 0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:none;
+  border:1px solid transparent;padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink);background:#fff;border-color:var(--line)}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{padding:30px 0 70px}
+.panel{display:none}
+.panel.on{display:block;animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.seg{display:inline-flex;gap:4px;background:#fff;border:1px solid var(--line);
+  padding:4px;border-radius:999px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.seg button{font:inherit;font-size:13px;font-weight:600;color:var(--muted);background:none;border:0;
+  padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--accent);color:#fff}
+.stage{background:
+  radial-gradient(680px 300px at 50% 0%, #fff 0%, var(--bg) 70%);padding:26px 0 0;border-radius:var(--r)}
+.frame{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  box-shadow:0 18px 50px -18px rgba(16,24,40,.22), 0 2px 6px rgba(16,24,40,.04);margin:0 auto}
+.frame .bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;
+  background:#fbfcfd;border-bottom:1px solid var(--line2)}
+.frame .bar i{width:9px;height:9px;border-radius:50%;background:#e2e6ec;display:block}
+.frame .bar i:nth-child(1){background:#ff5f57}.frame .bar i:nth-child(2){background:#febc2e}
+.frame .bar i:nth-child(3){background:#28c840}
+.frame .bar em{font-style:normal;font-size:11.5px;color:var(--faint);margin-left:8px;
+  font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frame iframe{display:block;width:100%;border:0;background:#fff}
+.frame.desktop{max-width:1080px}
+.frame.desktop iframe{height:min(74vh,760px);min-height:520px}
+.frame.phone{width:400px;padding:14px;border-radius:34px;background:#0e1116;border:0;
+  box-shadow:0 26px 60px -20px rgba(16,24,40,.42)}
+.frame.phone .notch{position:absolute}
+.frame.phone iframe{height:748px;border-radius:22px}
+.frame.phone .bar{display:none}
+.hint{text-align:center;font-size:12.5px;color:var(--faint);margin:14px 0 0}
+.docs{display:flex;gap:26px;align-items:flex-start}
+.docs .side{position:sticky;top:132px;width:212px;flex:none;
+  max-height:calc(100vh - 150px);overflow-y:auto;scrollbar-width:thin}
+.side .side-t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
+  font-weight:700;margin:0 0 10px 12px}
+.side a{display:block;font-size:13.5px;color:var(--muted);padding:7px 12px;border-radius:9px;
+  margin-bottom:2px;line-height:1.45}
+.side a:hover{background:#fff;color:var(--ink)}
+.side a.on{background:var(--accent-soft);color:var(--accent-deep);font-weight:600}
+.docbox{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:38px 46px;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.doc{max-width:820px;font-size:15px;line-height:1.85;color:var(--ink2)}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:25px;line-height:1.35;letter-spacing:-.02em;color:var(--ink);margin:6px 0 18px;
+  padding-bottom:14px;border-bottom:1px solid var(--line2)}
+.doc h2{font-size:19px;color:var(--ink);letter-spacing:-.01em;margin:38px 0 14px;
+  padding-left:13px;border-left:3px solid var(--accent);line-height:1.4}
+.doc h3{font-size:16px;color:var(--ink);margin:26px 0 10px;font-weight:700}
+.doc h4{font-size:14.5px;color:var(--ink);margin:20px 0 8px;font-weight:700}
+.doc p{margin:13px 0}
+.doc ul,.doc ol{margin:13px 0 13px 20px}
+.doc li{margin:6px 0}
+.doc li>ul,.doc li>ol{margin:6px 0 6px 18px}
+.doc strong{color:var(--ink);font-weight:700}
+.doc hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+.doc blockquote{margin:18px 0;padding:12px 18px;background:#fafbfc;border-left:3px solid #d9dee6;
+  border-radius:0 10px 10px 0;color:var(--muted);font-size:14.5px}
+.doc blockquote p{margin:4px 0}
+.doc .tbl{margin:18px 0;overflow-x:auto}
+.doc table{width:100%;border-collapse:collapse;font-size:13.5px}
+.doc th{background:#fafbfc;font-weight:700;color:var(--ink);text-align:left}
+.doc th,.doc td{border:1px solid var(--line);padding:9px 13px;vertical-align:top}
+.doc tr:nth-child(even) td{background:#fcfcfd}
+.doc code{font-family:var(--mono);font-size:.88em;background:#f2f4f7;color:var(--accent-deep);
+  padding:2px 5px;border-radius:5px}
+.doc pre{background:#0f1720;color:#dde5ee;padding:18px 20px;border-radius:12px;overflow:auto;
+  margin:18px 0;font-size:12.8px;line-height:1.75}
+.doc pre code{background:none;color:inherit;padding:0;font-size:inherit}
+.doc img{max-width:100%;border-radius:10px;margin:10px 0}
+.doc a{color:var(--accent-deep);font-weight:600;border-bottom:1px solid var(--accent-soft)}
+.doc a:hover{border-bottom-color:var(--accent)}
+.inline-note{font-size:13px;color:var(--faint)}
+.codes .filebar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.codes .filebar button{font:inherit;font-family:var(--mono);font-size:12.5px;color:var(--muted);
+  background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}
+.codes .filebar button.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.codes pre{background:#0f1720;color:#dde5ee;border-radius:14px;padding:22px 24px;overflow:auto;
+  font-family:var(--mono);font-size:13px;line-height:1.8;margin:0}
+.codes .meta{font-size:13px;color:var(--muted);margin:0 0 14px}
+.empty{color:var(--faint);font-size:14px}
+footer{border-top:1px solid var(--line);background:#fff;padding:34px 0 46px;font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+footer a{color:var(--accent-deep);font-weight:600}
+@media (max-width:900px){
+  .wrap{padding:0 18px}
+  h1{font-size:30px} .tagline{font-size:17px} .lede{font-size:14.5px}
+  .hero .wrap{padding-top:38px;padding-bottom:28px}
+  .stats{gap:24px} .stats b{font-size:20px}
+  .docs{flex-direction:column} .docs .side{position:static;width:100%}
+  .side{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .side .side-t{display:none} .side a{white-space:nowrap;background:#fff;border:1px solid var(--line)}
+  .docbox{padding:24px 18px}
+  .frame.phone{width:100%;max-width:360px;padding:10px} .frame.phone iframe{height:640px}
+  .top nav{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="index.html"><span class="logo">AI</span>Creative Trials<em>&nbsp;/&nbsp;Sciology Healing</em></a>
+  <nav>
+    <a href="index.html#prototypes">产品原型</a>
+    <a href="index.html#content">内容 IP</a>
+    <a href="index.html#method">方法沉淀</a>
+  </nav>
+  <a class="ghost" href="index.html">全部作品 →</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <p class="eyebrow"><i></i>内容 IP / Content System</p>
+  <h1>社会学治愈图文<span class="sub">Sciology Healing</span></h1>
+  <p class="tagline">用社会学的骨架，接住当下的情绪</p>
+  <p class="lede">一套面向都市精神困境的内容 IP：不写鸡汤，用工具理性、悬浮感、群体性孤独这些概念做选题骨架，再用竖版海报与克制短句完成表达。留下的是完整生产关系——核心理论、人群与付费、视觉规范、提示词库、案例模板与分发运营。</p>
+  
+  <ul class="stats"><li><b>4</b><span>个核心命题</span></li><li><b>10</b><span>份生产资产</span></li><li><b>3</b><span>条变现路径</span></li><li><b>2</b><span>个完整案例</span></li></ul>
+</div></section>
+
+
+
+<main><section class="panel on" id="p-docs"><div class="wrap"><div class="docs"><aside class="side" data-group="docs"><p class="side-t">文档</p><a href="#" data-file="overview" data-alias="readme" class="on">项目定位</a><a href="#" data-file="theory" data-alias="core‑theory">核心理论剖析</a><a href="#" data-file="biz" data-alias="target‑user‑monetize">用户画像与盈利</a><a href="#" data-file="dist" data-alias="distribute‑operation">分发与连载运营</a><a href="#" data-file="prompt" data-alias="poster‑art‑prompt">海报提示词库</a><a href="#" data-file="copy" data-alias="copy‑skill‑template">文案 Skill 模板</a><a href="#" data-file="sop" data-alias="create ai生成防幻觉执行规范-去远山,design‑sop">设计 SOP</a><a href="#" data-file="case1" data-alias="case01-floating-anxiety">案例 01 · 悬浮的焦虑</a><a href="#" data-file="case2" data-alias="case02-group-loneliness">案例 02 · 群体性孤独</a><a href="#" data-file="case-tpl" data-alias="case-template">案例模板</a></aside><div class="docbox"><article class="doc" data-docof="docs" data-key="overview"><h1>Sociology‑Healing‑Graphic｜社会学洞察治愈图文IP</h1>
+<blockquote>
+<p>AI生成社会学向治愈海报、长图文连载项目｜AIPM内容产品化资产库</p>
+</blockquote>
+<h2>✨项目定位</h2>
+<p>这是一套面向当代都市精神困境的内容IP。<br />
+时代悖论：高度互联、物质丰裕，但个体被<strong>工具理性、效率崇拜、自我驱动隐性规训</strong>裹挟，陷入悬浮、疲惫、群体性孤独。<br />
+不提供鸡汤，以社会学理论为骨架，用视觉海报+克制的人文短句完成情绪看见与精神和解。<br />
+产品形态：系列竖版海报、公众号长图文、连载短文，全部由AIGC流水线产出、标准化迭代。</p>
+<h2>📌核心命题</h2>
+<ul>
+<li>工具理性过度膨胀，效率取代意义</li>
+<li>“自我鞭策式内卷”，一种自愿的隐性规训</li>
+<li>永久在线带来连接过剩，催生群体性孤独</li>
+<li>丰裕社会下的悬浮感：拥有很多，却无处扎根</li>
+</ul>
+<h2>📁仓库目录说明</h2>
+<h2>💰商业化方向（最小闭环优先）</h2>
+<ol>
+<li>B端供稿：心理博主、独立书店、人文公众号、心理工作室，海报授权/定制供稿</li>
+<li>文创转化：海报电子版、明信片、装饰画版权售卖</li>
+<li>内容服务：为心理社群、青年读书会定制系列图文专栏<blockquote>
+<p>拒绝流量标题党，以社会学可信度作为IP核心壁垒。</p>
+</blockquote>
+</li>
+</ol>
+<h2>🧩AIPM作品集价值 &amp; 可复用资产</h2>
+<p>本仓库沉淀完整<strong>内容产品从选题→理论拆解→提示词标准化→产出→分发→变现复盘</strong>全链路SOP。<br />
+可迁移复用至社区科普IP、心理科普短视频、人文内容项目：<br />
+1. 理论选题挖掘方法<br />
+2. 分人群痛点拆解框架<br />
+3. AIGC图文标准化生产流水线<br />
+4. 小B版权供稿的最小商业闭环<br />
+5. 连载内容迭代与运营复盘模板</p>
+<h2>📎快速导航</h2>
+<ul>
+<li><a href="#" data-doc="theory">核心理论剖析文档</a></li>
+<li><a href="#" data-doc="biz">用户画像与盈利方案</a></li>
+<li><a href="#" data-doc="dist">分发运营&amp;连载选题</a></li>
+<li><a href="#" data-doc="prompt">海报插画提示词库</a></li>
+<li><span>案例模板</span></li>
+</ul></article><article class="doc" data-docof="docs" data-key="theory" style=display:none><h1>core‑theory｜理论溯源与概念深度剖析</h1>
+<h2>项目底层理论来源</h2>
+<p>马克斯·韦伯「工具理性/价值理性」、理查德·桑内特「公共人的衰落」、雪莉·特克尔《群体性孤独》、韩炳哲《倦怠社会》、鲍曼《流动的现代性》。</p>
+<h2>概念逐条剖析（可直接用于海报文案/长图文）</h2>
+<h3>1.工具理性</h3>
+<p>我们只关心手段、效率、产出、可量化结果，不再追问生活本身的意义。<br />
+效率成为最高准则，工作、学习、休息甚至情绪都被任务化、指标化。</p>
+<blockquote>
+<p>金句：工具理性许诺更多掌控感，最后只留给我们永不停歇的疲惫。</p>
+</blockquote>
+<h3>2.自我驱动的隐性规训（韩炳哲倦怠社会）</h3>
+<p>不再是外部压迫，而是个体不断自我催促、自我苛责。<br />
+我们自愿内卷，把自我优化当成终身使命，在无休止的自我提升中耗竭。</p>
+<blockquote>
+<p>金句：敌人不再是别人，是永不停止鞭策自己的我。</p>
+</blockquote>
+<h3>3.群体性孤独</h3>
+<p>线上连接无限充裕，沟通变多却越来越浅。<br />
+社交软件消除距离，却建立一座座孤岛；我们时刻在线，却难以获得深度共鸣。</p>
+<blockquote>
+<p>金句：我们连接一切，唯独无法抵达彼此。</p>
+</blockquote>
+<h3>4.悬浮感｜流动现代性</h3>
+<p>物质充足，但归属感消失。没有稳定的扎根支点，人生持续漂泊。<br />
+不断追逐下一个目标，抵达之后依旧空虚。</p>
+<h2>✍理论使用规范（产品准则）</h2>
+<ol>
+<li>拒绝晦涩学术术语堆砌，把社会学概念转化成普通人能共情的情绪痛点；</li>
+<li>不制造焦虑，不贩卖抑郁，核心是<strong>看见困境，接纳痛苦，获得和解</strong>；</li>
+<li>每条海报只聚焦<strong>一个社会学命题</strong>，不多个概念混杂，保证情绪纯粹；</li>
+<li>文案克制留白，把理论藏在感受背后，避免说教感。</li>
+</ol>
+<h2>📋素材库：海报可用金句合集</h2>
+<ol>
+<li>我们拥有无限连接，却活成一座座相互遥望的孤岛。（群体性孤独）</li>
+<li>不是懒惰困住我们，是无休止的自我鞭策将我们耗竭。（自我规训）</li>
+<li>工具理性带来效率，却抽空了生活本身的意义。</li>
+<li>时代提供一切便利，却很难给我们一处可以扎根的土壤。（悬浮感）</li>
+<li>我们习惯把人生拆解成KPI，却遗忘活着不需要全部有产出。</li>
+<li>在线的人越来越多，真正的对话越来越少。</li>
+<li>我们不断优化自己，直到疲惫成为日常底色。</li>
+<li>丰裕没有治愈空洞，只是放大了空洞。</li>
+</ol>
+<h2>📖拓展阅读清单（后续选题来源）</h2>
+<ul>
+<li>《倦怠社会》韩炳哲</li>
+<li>《群体性孤独》雪莉·特克尔</li>
+<li>《现代性的后果》吉登斯</li>
+<li>《流动的现代性》鲍曼</li>
+<li>《新教伦理与资本主义精神》韦伯</li>
+</ul></article><article class="doc" data-docof="docs" data-key="biz" style=display:none><h1>target‑user‑monetize｜用户画像、痛点、盈利模式、合作渠道</h1>
+<h2>一、两类用户</h2>
+<h3>终端C端读者（受众，不直接变现，负责建立传播势能）</h3>
+<p><strong>画像：22‑35岁都市青年，大学生、白领、自由职业者</strong><br />
+痛点：内卷疲惫、精神内耗、社交疲惫、孤独感、意义迷茫；厌倦鸡汤，想要有深度、克制、社会学视角的情绪治愈内容。<br />
+需求：朋友圈配图、读书笔记、心理疗愈素材，追求高级感、人文质感，拒绝廉价治愈文案。</p>
+<h3>B端付费客户（真正付费方，项目变现核心）</h3>
+<ol>
+<li>
+<p><strong>心理博主/心理工作室</strong><br />
+痛点：缺少有理论支撑、格调统一的配图文案；市面治愈图同质化严重。<br />
+采购需求：系列海报、专栏图文，用于公众号、小红书、社群发布。<br />
+合作方式：按月供稿、单张版权买断、专栏定制。</p>
+</li>
+<li>
+<p><strong>独立书店、人文咖啡馆、青年读书会</strong><br />
+痛点：需要氛围感海报、明信片、线下活动展板文案，打造人文调性。<br />
+合作方式：实体文创授权、线下展览图文合作。</p>
+</li>
+<li>
+<p><strong>人文公众号、文化类自媒体</strong><br />
+痛点：持续产出深度人文内容难度高，缺少视觉物料。<br />
+合作方式：连载专栏供稿，按篇结算。</p>
+</li>
+</ol>
+<blockquote>
+<p>核心结论：<strong>不要卖给普通散户，主攻小B端供稿与版权授权，跑通最小变现闭环</strong>。</p>
+</blockquote>
+<h2>二、可落地盈利路径（从易到难）</h2>
+<ol>
+<li><strong>阶段1｜最小验证（0成本）</strong><br />
+产出8‑10张成套系列海报，投递3‑5家心理博主/独立书店洽谈试用供稿，换取报价与反馈，验证市场接受度。</li>
+<li><strong>阶段2｜版权供稿（主线收入）</strong><br />
+固定专栏供稿、单张图片授权、季度内容包售卖。保留IP所有权，只授予非独家使用。</li>
+<li><strong>阶段3｜文创衍生（长期）</strong><br />
+电子版高清海报、明信片套装，线上售卖电子版，规避实物库存压力。</li>
+<li><strong>阶段4｜定制化内容服务</strong><br />
+为社群、读书会定制整套主题连载图文方案，交付选题+文案+AI提示词包。</li>
+</ol>
+<h2>三、客户想要解决什么问题</h2>
+<ol>
+<li>博主：摆脱网红廉价鸡汤风格，提升账号人文质感，塑造差异化IP；</li>
+<li>书店/线下空间：增加氛围感、人文调性，吸引青年客流；</li>
+<li>心理社群：提供温和、有理论深度的疗愈素材，避免情绪化煽动。</li>
+</ol>
+<h2>四、盈利避坑清单</h2>
+<p>❌不要盲目印刷大量实体文创，库存风险极高；优先电子版、版权授权<br />
+❌不要追逐短视频流量爆火，流量变现不稳定，放弃标题党；<br />
+✅以社会学理论作为IP壁垒，区别于市面上泛滥的鸡汤治愈图文；<br />
+✅成套系列化交付，单张零散作品议价能力弱。</p></article><article class="doc" data-docof="docs" data-key="dist" style=display:none><h1>distribute‑operation｜分发渠道、内容节奏、连载选题、运营复盘</h1>
+<h2>一、分发渠道矩阵（分为种草引流渠道+B端对接渠道）</h2>
+<h3>公域种草（积累作品案例，用于向B端展示作品集）</h3>
+<p>1.小红书：竖版海报发布，标签#人文治愈 #社会学思考 #精神内耗，不追求流量，沉淀作品橱窗；<br />
+2.公众号：按月连载长图文，把海报搭配短文形成专栏；</p>
+<blockquote>
+<p>目标：打造作品展示展厅，作为洽谈B端合作的作品集，而非直接C端带货。</p>
+</blockquote>
+<h3>B端商务对接渠道（变现渠道）</h3>
+<p>1.小红书私信人文博主、心理工作室；<br />
+2.独立书店官方公众号/老板社交账号；<br />
+3.青年读书会社群负责人；<br />
+4.人文内容约稿平台。</p>
+<h2>二、内容生产节奏（标准化连载）</h2>
+<ul>
+<li>每月1个社会学大主题，产出4张海报+1篇配套长图文；</li>
+<li>一套主题形成完整系列，方便打包卖给B端客户；</li>
+<li>生产流水线：理论选题→痛点提炼→slogan定稿→AI视觉生成→复盘归档入库。</li>
+</ul>
+<h2>三、连载选题库（10个系列选题，可循环迭代）</h2>
+<p>1.倦怠社会｜自我鞭策与无休止内耗<br />
+2.群体性孤独｜永远在线，却彼此隔绝<br />
+3.工具理性陷阱｜把生活全部效率化<br />
+4.悬浮的现代人｜丰裕时代的无根感<br />
+5.社交疲惫：浅社交泛滥，深度沟通稀缺<br />
+6.自我优化神话：终身进步的枷锁<br />
+7.碎片时代：注意力被持续切割<br />
+8.比较焦虑：社交媒体制造的参照牢笼<br />
+9.自由的重负：选择过多带来精神疲惫<br />
+10.慢的消失：整个社会加速，个体无处喘息</p>
+<h2>四、运营复盘模板（每个系列结束后填写，存入case）</h2>
+<p>1.发布数据：点赞、收藏、私信咨询合作数量<br />
+2.B端意向数量、客户反馈（文案/画面风格是否符合需求）<br />
+3.哪些选题更容易获得合作咨询，迭代下一期选题方向<br />
+4.提示词、文案优化点，沉淀进入提示词库</p>
+<h2>五、内容红线</h2>
+<p>1.不渲染绝望、不煽动抑郁；落脚点是觉察、接纳、和解；<br />
+2.不使用极端焦虑营销；<br />
+3.理论引用严谨，杜绝伪社会学鸡汤。</p></article><article class="doc" data-docof="docs" data-key="prompt" style=display:none><h1>poster‑art‑prompt｜海报AI绘画提示词库&amp;视觉规范</h1>
+<h2>🎨IP统一视觉风格定义（固定基底，保证系列辨识度）</h2>
+<p>风格关键词：水彩拼贴、低饱和莫兰迪色调、安静疏离、氛围感、柔和光影、杂志剪贴质感，极简构图，留白充足，无尖锐线条，文艺治愈，略带沉静忧郁，不要二次元、不要网红ins风。<br />
+画幅比例：3:4竖版海报（适配小红书、公众号、印刷明信片）</p>
+<h2>✅通用基底模板（每次生成先粘贴本段，再追加主题描述）</h2>
+<blockquote>
+<p>竖版3:4，水彩杂志剪贴拼贴艺术，柔和低饱和莫兰迪配色，大量留白，朦胧柔光，安静疏离氛围感，极简构图，细腻纹理，高级人文质感，无多余杂物，文艺治愈，沉静克制，不要艳丽色彩，无卡通，厚纸肌理，高清，细腻质感</p>
+</blockquote>
+<h2>📌分主题示例提示词</h2>
+<h3>案例1｜群体性孤独</h3>
+<p>基底模板 + 破碎的玻璃窗，遥远微弱光点，人与人之间隔着薄雾，孤独孤岛，朦胧雾气，安静夜晚</p>
+<h3>案例2｜自我驱动倦怠</h3>
+<p>基底模板 + 一根不断绷紧快要断裂的细线，昏暗柔和光线，散落干枯书页，安静疲惫感，没有激烈情绪</p>
+<h3>案例3｜工具理性</h3>
+<p>基底模板 + 老旧钟表齿轮缠绕柔软植物，冰冷机械与温柔自然形成对比，光影朦胧</p>
+<h2>📏视觉规范（保证IP统一，避免风格漂移）</h2>
+<p>1.禁止高饱和亮色、浓烈撞色；<br />
+2.画面留白≥40%，为文字slogan预留位置；<br />
+3.拒绝写实人像特写，多用隐喻意象（孤岛、薄雾、细线、齿轮、植物、书页）；<br />
+4.不堆砌过多元素，一张海报只承载一个意象。</p>
+<h2>💡迭代规则</h2>
+<p>每次产出满意海报后，记录prompt、画面优缺点，持续优化模板，沉淀为本项目专属资产。</p></article><article class="doc" data-docof="docs" data-key="copy" style=display:none><h1>copy‑skill‑template｜文案生成Skill模板</h1>
+<blockquote>
+<p>输入社会学概念，自动产出海报主slogan+短文段落，标准化生成文案</p>
+</blockquote>
+<h2>【Skill指令】</h2>
+<p>你是社会学治愈图文文案师。围绕指定社会学概念（工具理性/倦怠社会/群体性孤独/悬浮感）完成创作，遵循规则：<br />
+1.语言克制冷静，拒绝鸡汤、励志口号；<br />
+2.找到当代都市人的真实情绪痛点，用具象隐喻，少学术术语；<br />
+3.输出三段内容：①海报15字以内主slogan；②3条备选短句；③150字左右配套长图文散文；<br />
+4.情绪基调：看见疲惫、接纳困境，温和和解，不制造焦虑。</p>
+<h2>📝调用示例输入</h2>
+<blockquote>
+<p>主题：自我驱动隐性规训，韩炳哲倦怠社会</p>
+</blockquote>
+<h3>输出样稿</h3>
+<p>【主Slogan】我们持续鞭策自己，直至疲惫成为底色<br />
+备选短句：<br />
+1.内卷不再来自逼迫，而是我们对自己永不停止的要求<br />
+2.追求无限进步的神话，耗尽内在力量<br />
+长图文正文：<br />
+我们不再被外力驱赶，而是主动给自己设立目标与标准。自我优化成为一种义务，休息也需要找到意义。我们在无休止的精进里慢慢耗竭，却很难意识到，真正的枷锁，来自内在持续的苛责。不必永远向前奔跑，允许自己停留，本身也是一种自由。</p>
+<h2>📌文案资产复用方式</h2>
+<p>1.直接作为海报文字；<br />
+2.扩展为公众号连载长文；<br />
+3.交付B端客户成套文案包；<br />
+4.沉淀优秀句子进入金句素材库。</p></article><article class="doc" data-docof="docs" data-key="sop" style=display:none><p>科普海报吸引受众设计 SOP<br />
+1. 开篇用反问 / 颠覆常识标题，制造注意力钩子<br />
+2. 图文并行：氛围感主插画 + 极简对错示意小图标<br />
+3. 文案三段式：误区风险→标准操作→就医警示，短句 + 符号分层<br />
+4. 双版本策略：文艺治愈款用于社区传播，明亮简笔画款用于校园<br />
+5. 末尾标注权威来源，建立科普可信度</p></article><article class="doc" data-docof="docs" data-key="case1" style=display:none><h1>Case01｜互联时代的群体性孤独</h1>
+<h2>1.理论原点</h2>
+<p>概念：雪莉·特克尔 群体性孤独<br />
+一句话解释：持续在线带来过量浅层连接，人与人物理距离拉近，心灵隔阂加深，越社交越孤独。</p>
+<h2>2.受众痛点</h2>
+<p>每天刷社交软件，好友众多，却很少深度倾诉；朋友圈热闹，内心依然孤独；害怕独处，又厌倦无效社交。</p>
+<h2>3.文案产出</h2>
+<blockquote>
+<p>主海报Slogan：我们彼此相连，却各自孤岛<br />
+备选短句：<br />
+1.屏幕连接千万人，却难以抵达一颗心<br />
+2.线上永不缺席，孤独如影随形<br />
+配套短文：<br />
+我们拥有随时沟通的工具，却慢慢失去深度对话的能力。无数碎片化的点赞与留言填满日常，可喧嚣褪去之后，空洞依旧存在。互联给了我们永不孤单的假象，也制造了新的孤独。不必强迫自己时刻在线，适度留白，才能听见自己。</p>
+</blockquote>
+<h2>4.AI绘画Prompt</h2>
+<p>竖版3:4，水彩杂志剪贴拼贴艺术，柔和低饱和莫兰迪配色，大量留白，朦胧柔光，安静疏离氛围感，极简构图，细腻纹理，高级人文质感，薄雾笼罩一座座微小孤岛，微弱遥远光点，海面雾气，夜晚静谧氛围，无卡通，厚纸肌理</p>
+<h2>5.分发与商业化记录</h2>
+<p>发布平台：小红书<br />
+数据反馈：<br />
+B端意向客户：</p>
+<h2>6.复盘沉淀</h2>
+<p>优点：意象直观，共情门槛低，适合作为系列开篇<br />
+不足：文案略偏伤感，后续增加和解落点<br />
+优化方向：增加接纳孤独的正向结尾<br />
+可复用资产：孤岛、薄雾、微光意象，可迁移至心理博主供稿</p></article><article class="doc" data-docof="docs" data-key="case2" style=display:none><h1>Case02｜自我驱动的隐性规训，倦怠内卷</h1>
+<h2>1.理论原点</h2>
+<p>概念：韩炳哲《倦怠社会》，自愿式自我压榨，隐性规训<br />
+一句话解释：不再是外部压迫，个体主动无限加码自我提升，在无休止自我要求中耗竭。</p>
+<h2>2.受众痛点</h2>
+<p>不敢休息，休息产生负罪感；永远觉得不够好；不断内卷内耗，疲惫却无法停下。</p>
+<h2>3.文案产出</h2>
+<blockquote>
+<p>主海报Slogan：枷锁不在外界，而在持续自我鞭策<br />
+备选短句：<br />
+1.我们自愿奔跑，直到耗尽全部力量<br />
+2.进步成为义务，松弛变成罪过<br />
+配套短文：<br />
+现代的枷锁不再粗暴。它伪装成自律、成长、精进。我们不断给自己制定目标，把休息看作浪费时间，在永无止境的自我优化里慢慢倦怠。人生不必一直保持向上的姿态，停顿与放空，不是退步，而是找回自己。</p>
+</blockquote>
+<h2>4.AI绘画Prompt</h2>
+<p>竖版3:4，水彩杂志剪贴拼贴艺术，柔和低饱和莫兰迪配色，大量留白，朦胧柔光，安静疏离氛围感，一根紧绷近乎断裂的细线，散落干枯书页，柔和昏暗光影，沉静疲惫感，极简构图，厚纸肌理，无艳丽色彩</p>
+<h2>5.分发与商业化记录</h2>
+<p>发布平台：<br />
+数据反馈：<br />
+B端意向客户：</p>
+<h2>6.复盘沉淀</h2>
+<p>优点精准击中白领、学生内耗痛点，市场需求强<br />
+不足：容易显得压抑，后续文案增加松弛和解视角<br />
+复用资产：细线、书页隐喻意象，适合心理工作室定制专栏</p></article><article class="doc" data-docof="docs" data-key="case-tpl" style=display:none><h1>Case‑XX｜【主题名称】</h1>
+<h2>1.理论原点</h2>
+<p>引用概念：工具理性/群体性孤独/自我规训/悬浮感<br />
+一句话理论解释：</p>
+<h2>2.受众痛点描述</h2>
+<p>都市青年的真实困扰：</p>
+<h2>3.文案产出</h2>
+<blockquote>
+<p>主海报Slogan：<br />
+备选短句：<br />
+配套短文：</p>
+</blockquote>
+<h2>4.AI绘画Prompt</h2>
+<p>完整提示词：</p>
+<h2>5.分发与商业化记录</h2>
+<p>发布平台：<br />
+数据反馈（收藏/咨询合作）：<br />
+B端意向客户：</p>
+<h2>6.复盘沉淀（最重要，AIPM核心资产）</h2>
+<p>优点：<br />
+不足：<br />
+下一轮优化方向（文案/画面/选题）：<br />
+可复用经验，存入公共素材库内容：</p></article></div></div></div></section></main>
+
+<footer><div class="wrap">
+  <span>社会学治愈图文 · Sciology Healing — 单文件离线呈现，无外部依赖</span>
+  <a href="index.html">← 返回作品集</a>
+</div></footer>
+
+<script>window.__D={};</script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tabs button'));
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  function show(id){
+    panels.forEach(function(p){p.classList.toggle('on',p.id==='p-'+id)});
+    tabs.forEach(function(b){b.classList.toggle('on',b.dataset.tab===id)});
+    var p=document.getElementById('p-'+id);
+    if(p){[].slice.call(p.querySelectorAll('iframe[data-demo]')).forEach(function(f){
+      if(!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    });}
+    if(history.replaceState){history.replaceState(null,'','#'+id)}
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  tabs.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab)})});
+  [].slice.call(document.querySelectorAll('a[data-doc]')).forEach(function(a){
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var link=document.querySelector('.side a[data-file="'+a.dataset.doc+'"]');
+      if(link){show('docs');link.click();}else{show('docs')}
+    });
+  });
+  [].slice.call(document.querySelectorAll('[data-tab]')).forEach(function(el){
+    if(el.tagName==='A'){el.addEventListener('click',function(e){
+      e.preventDefault();show(el.dataset.tab);
+      if(el.getAttribute('data-view')){
+        var b=document.querySelector('.seg button[data-view="'+el.getAttribute('data-view')+'"]');
+        if(b)b.click();
+      }
+    })}
+  });
+  // 子页 iframe 的链接桥
+  window.addEventListener('message',function(e){
+    var d=e.data||{};if(d.ct!=='link')return;
+    var h=(d.href||'').toLowerCase();
+    if(/\.md$/.test(h)){
+      var base=h.split('/').pop().replace(/\.md$/,'');
+      var link=document.querySelector('.side a[data-file="'+base+'"]');
+      if(!link){
+        link=[].slice.call(document.querySelectorAll('.side a[data-alias]')).filter(function(a){
+          return (a.getAttribute('data-alias')||'').split(',').indexOf(base)>=0;
+        })[0];
+      }
+      if(link){show('docs');link.click();}
+      else{show('docs')}
+      return;
+    }
+    if(/\.html$/.test(h)||/\.mp4$/.test(h)){
+      show('demo');
+      var gd=document.querySelector('.seg button[data-view="game"]');
+      if(gd)gd.click();
+    }
+  });
+  // 演示区切换（PC / 手机等）
+  [].slice.call(document.querySelectorAll('.seg')).forEach(function(seg){
+    var btns=[].slice.call(seg.querySelectorAll('button'));
+    btns.forEach(function(b){b.addEventListener('click',function(){
+      btns.forEach(function(x){x.classList.toggle('on',x===b)});
+      var host=document.getElementById(seg.dataset.host);
+      if(!host)return;
+      [].slice.call(host.children).forEach(function(c){
+        if(c.classList.contains('view')){c.style.display=(c.dataset.view===b.dataset.view)?'':'none'}
+      });
+      var f=host.querySelector('.view:not([style*="none"]) iframe[data-demo]');
+      if(f&&!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    })});
+  });
+  // 文档 / 源码切换
+  [].slice.call(document.querySelectorAll('[data-group]')).forEach(function(side){
+    var links=[].slice.call(side.querySelectorAll('a[data-file]'));
+    links.forEach(function(a){a.addEventListener('click',function(e){
+      e.preventDefault();
+      var g=side.dataset.group;
+      links.forEach(function(x){x.classList.toggle('on',x===a)});
+      [].slice.call(document.querySelectorAll('[data-docof="'+g+'"]')).forEach(function(d){
+        d.style.display=(d.dataset.key===a.dataset.file)?'':'none';
+      });
+      if(window.innerWidth<900){
+        var cur=document.querySelector('[data-docof="'+g+'"]');
+        var vis=null;
+        [].slice.call(document.querySelectorAll('[data-docof="'+g+'"]')).forEach(function(d){
+          if(d.style.display!=='none')vis=d;
+        });
+        if(vis&&vis.scrollIntoView){vis.scrollIntoView({block:'start'})}
+      }
+    })});
+  });
+  var initial=(location.hash||'').replace('#','');
+  if(initial&&document.getElementById('p-'+initial)){show(initial)}else{
+    var first=document.querySelector('.panel.on');
+    if(first){[].slice.call(first.querySelectorAll('iframe[data-demo]')).forEach(function(f){
+      if(!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    })}
+  }
+})();
+</script>
+</body>
+</html>

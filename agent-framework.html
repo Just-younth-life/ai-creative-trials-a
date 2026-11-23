@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 调度框架 · Agent Framework｜AI Creative Trials</title>
+<meta name="description" content="灰度开关 + 工厂模式，把模型变成可替换零件">
+<style>
+:root{
+  --accent:#0f766e; --accent-deep:#0c5c56; --accent-soft:#e7f1f0; --accent-softer:#f3f8f8;
+  --ink:#0e1116; --ink2:#39424f; --muted:#6b7481; --faint:#98a1ad;
+  --line:#e6e9ef; --line2:#eff1f5; --bg:#f7f8fa; --card:#ffffff;
+  --r:18px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.7;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+.top{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:22px;height:60px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.brand .logo{width:22px;height:22px;border-radius:7px;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-size:9.5px;font-weight:800;letter-spacing:.02em}
+.brand em{font-style:normal;color:var(--faint);font-weight:500}
+.top nav{display:flex;gap:20px;font-size:13.5px;color:var(--muted);margin-left:auto}
+.top nav a:hover{color:var(--ink)}
+.top .ghost{font-size:13px;color:var(--accent-deep);background:var(--accent-soft);
+  padding:7px 13px;border-radius:999px;font-weight:600;white-space:nowrap}
+.hero{position:relative;overflow:hidden;background:
+  radial-gradient(760px 320px at 12% -10%, #e7f1f0 0%, rgba(255,255,255,0) 70%), #fff;
+  border-bottom:1px solid var(--line)}
+.hero .wrap{padding-top:56px;padding-bottom:38px;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-deep);font-weight:700}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
+h1{font-size:40px;line-height:1.15;letter-spacing:-.025em;margin:16px 0 0;font-weight:800}
+h1 .sub{font-size:15px;font-weight:600;color:var(--faint);letter-spacing:.02em;
+  margin-left:12px;vertical-align:2px;font-family:var(--mono)}
+.tagline{margin-top:12px;font-size:19px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.lede{margin-top:12px;max-width:760px;font-size:15.5px;color:var(--ink2);line-height:1.85}
+.stats{display:flex;flex-wrap:wrap;gap:34px;margin-top:30px;list-style:none}
+.stats li{display:flex;flex-direction:column;gap:2px;min-width:88px}
+.stats b{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.stats span{font-size:12.5px;color:var(--muted)}
+.hero-acts{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.hero-acts a{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;
+  padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;
+  color:var(--ink);transition:.18s}
+.hero-acts a:hover{border-color:var(--accent);color:var(--accent-deep)}
+.hero-acts a.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hero-acts a.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+.tabbar{position:sticky;top:60px;z-index:50;background:rgba(247,248,250,.92);
+  backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:6px;padding:12px 0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:none;
+  border:1px solid transparent;padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink);background:#fff;border-color:var(--line)}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{padding:30px 0 70px}
+.panel{display:none}
+.panel.on{display:block;animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.seg{display:inline-flex;gap:4px;background:#fff;border:1px solid var(--line);
+  padding:4px;border-radius:999px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.seg button{font:inherit;font-size:13px;font-weight:600;color:var(--muted);background:none;border:0;
+  padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--accent);color:#fff}
+.stage{background:
+  radial-gradient(680px 300px at 50% 0%, #fff 0%, var(--bg) 70%);padding:26px 0 0;border-radius:var(--r)}
+.frame{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  box-shadow:0 18px 50px -18px rgba(16,24,40,.22), 0 2px 6px rgba(16,24,40,.04);margin:0 auto}
+.frame .bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;
+  background:#fbfcfd;border-bottom:1px solid var(--line2)}
+.frame .bar i{width:9px;height:9px;border-radius:50%;background:#e2e6ec;display:block}
+.frame .bar i:nth-child(1){background:#ff5f57}.frame .bar i:nth-child(2){background:#febc2e}
+.frame .bar i:nth-child(3){background:#28c840}
+.frame .bar em{font-style:normal;font-size:11.5px;color:var(--faint);margin-left:8px;
+  font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frame iframe{display:block;width:100%;border:0;background:#fff}
+.frame.desktop{max-width:1080px}
+.frame.desktop iframe{height:min(74vh,760px);min-height:520px}
+.frame.phone{width:400px;padding:14px;border-radius:34px;background:#0e1116;border:0;
+  box-shadow:0 26px 60px -20px rgba(16,24,40,.42)}
+.frame.phone .notch{position:absolute}
+.frame.phone iframe{height:748px;border-radius:22px}
+.frame.phone .bar{display:none}
+.hint{text-align:center;font-size:12.5px;color:var(--faint);margin:14px 0 0}
+.docs{display:flex;gap:26px;align-items:flex-start}
+.docs .side{position:sticky;top:132px;width:212px;flex:none;
+  max-height:calc(100vh - 150px);overflow-y:auto;scrollbar-width:thin}
+.side .side-t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
+  font-weight:700;margin:0 0 10px 12px}
+.side a{display:block;font-size:13.5px;color:var(--muted);padding:7px 12px;border-radius:9px;
+  margin-bottom:2px;line-height:1.45}
+.side a:hover{background:#fff;color:var(--ink)}
+.side a.on{background:var(--accent-soft);color:var(--accent-deep);font-weight:600}
+.docbox{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:38px 46px;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.doc{max-width:820px;font-size:15px;line-height:1.85;color:var(--ink2)}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:25px;line-height:1.35;letter-spacing:-.02em;color:var(--ink);margin:6px 0 18px;
+  padding-bottom:14px;border-bottom:1px solid var(--line2)}
+.doc h2{font-size:19px;color:var(--ink);letter-spacing:-.01em;margin:38px 0 14px;
+  padding-left:13px;border-left:3px solid var(--accent);line-height:1.4}
+.doc h3{font-size:16px;color:var(--ink);margin:26px 0 10px;font-weight:700}
+.doc h4{font-size:14.5px;color:var(--ink);margin:20px 0 8px;font-weight:700}
+.doc p{margin:13px 0}
+.doc ul,.doc ol{margin:13px 0 13px 20px}
+.doc li{margin:6px 0}
+.doc li>ul,.doc li>ol{margin:6px 0 6px 18px}
+.doc strong{color:var(--ink);font-weight:700}
+.doc hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+.doc blockquote{margin:18px 0;padding:12px 18px;background:#fafbfc;border-left:3px solid #d9dee6;
+  border-radius:0 10px 10px 0;color:var(--muted);font-size:14.5px}
+.doc blockquote p{margin:4px 0}
+.doc .tbl{margin:18px 0;overflow-x:auto}
+.doc table{width:100%;border-collapse:collapse;font-size:13.5px}
+.doc th{background:#fafbfc;font-weight:700;color:var(--ink);text-align:left}
+.doc th,.doc td{border:1px solid var(--line);padding:9px 13px;vertical-align:top}
+.doc tr:nth-child(even) td{background:#fcfcfd}
+.doc code{font-family:var(--mono);font-size:.88em;background:#f2f4f7;color:var(--accent-deep);
+  padding:2px 5px;border-radius:5px}
+.doc pre{background:#0f1720;color:#dde5ee;padding:18px 20px;border-radius:12px;overflow:auto;
+  margin:18px 0;font-size:12.8px;line-height:1.75}
+.doc pre code{background:none;color:inherit;padding:0;font-size:inherit}
+.doc img{max-width:100%;border-radius:10px;margin:10px 0}
+.doc a{color:var(--accent-deep);font-weight:600;border-bottom:1px solid var(--accent-soft)}
+.doc a:hover{border-bottom-color:var(--accent)}
+.inline-note{font-size:13px;color:var(--faint)}
+.codes .filebar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.codes .filebar button{font:inherit;font-family:var(--mono);font-size:12.5px;color:var(--muted);
+  background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}
+.codes .filebar button.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.codes pre{background:#0f1720;color:#dde5ee;border-radius:14px;padding:22px 24px;overflow:auto;
+  font-family:var(--mono);font-size:13px;line-height:1.8;margin:0}
+.codes .meta{font-size:13px;color:var(--muted);margin:0 0 14px}
+.empty{color:var(--faint);font-size:14px}
+footer{border-top:1px solid var(--line);background:#fff;padding:34px 0 46px;font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+footer a{color:var(--accent-deep);font-weight:600}
+@media (max-width:900px){
+  .wrap{padding:0 18px}
+  h1{font-size:30px} .tagline{font-size:17px} .lede{font-size:14.5px}
+  .hero .wrap{padding-top:38px;padding-bottom:28px}
+  .stats{gap:24px} .stats b{font-size:20px}
+  .docs{flex-direction:column} .docs .side{position:static;width:100%}
+  .side{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .side .side-t{display:none} .side a{white-space:nowrap;background:#fff;border:1px solid var(--line)}
+  .docbox{padding:24px 18px}
+  .frame.phone{width:100%;max-width:360px;padding:10px} .frame.phone iframe{height:640px}
+  .top nav{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="index.html"><span class="logo">AI</span>Creative Trials<em>&nbsp;/&nbsp;Agent Framework</em></a>
+  <nav>
+    <a href="index.html#prototypes">产品原型</a>
+    <a href="index.html#content">内容 IP</a>
+    <a href="index.html#method">方法沉淀</a>
+  </nav>
+  <a class="ghost" href="index.html">全部作品 →</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <p class="eyebrow"><i></i>方法沉淀 / Engineering</p>
+  <h1>Agent 调度框架<span class="sub">Agent Framework</span></h1>
+  <p class="tagline">灰度开关 + 工厂模式，把模型变成可替换零件</p>
+  <p class="lede">轻量化多模型调度框架：配置层、数据层、调度层、代理层、接入层解耦，用产品灰度开关控制推理策略与工具清洗逻辑，新增模型厂商只需扩展一个代理类。同一份代码既支持命令行调试，也支持 FastAPI 对外提供接口。</p>
+  
+  <ul class="stats"><li><b>10</b><span>个源码文件</span></li><li><b>3</b><span>家模型厂商</span></li><li><b>2</b><span>种调用方式</span></li><li><b>4</b><span>层解耦结构</span></li></ul>
+</div></section>
+
+<div class="tabbar"><div class="wrap"><div class="tabs"><button data-tab="docs" class="on">架构说明</button><button data-tab="code">源码</button></div></div></div>
+
+<main><section class="panel on" id="p-docs"><div class="wrap"><div class="docs"><aside class="side" data-group="docs"><p class="side-t">文档</p><a href="#" data-file="arch" class="on">分层设计与接口契约</a></aside><div class="docbox"><article class="doc" data-docof="docs" data-key="arch"><h1>轻量化多模型调度框架</h1>
+<h2>一、为什么要这一层</h2>
+<p>做 AI 原型最烦的不是接模型，是<strong>换模型</strong>。同一套业务逻辑，今天要跑 Azure，明天客户要求 Bedrock，后天想试国产厂商，如果每个模型都写一遍调用逻辑，需求一变就得改业务代码。</p>
+<p>这个模块把「调哪家模型」变成配置项，把「怎么调」收进工厂。</p>
+<h2>二、四层结构</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>层</th>
+<th>文件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>配置层</td>
+<td><code>config_const.py</code> / <code>config_loader.py</code></td>
+<td>灰度开关常量、配置加载校验、单例管理</td>
+</tr>
+<tr>
+<td>数据层</td>
+<td><code>schema.py</code> / <code>exceptions.py</code></td>
+<td>Pydantic 入参出参模型、统一业务异常</td>
+</tr>
+<tr>
+<td>调度层</td>
+<td><code>agent_core.py</code> / <code>prompt_templates.py</code></td>
+<td>组装提示词、调用代理、回收工具调用与思考块</td>
+</tr>
+<tr>
+<td>代理层</td>
+<td><code>tool_provider.py</code></td>
+<td>多模型代理工厂（Azure / Bedrock / Minimax）</td>
+</tr>
+<tr>
+<td>接入层</td>
+<td><code>main.py</code> / <code>api_server.py</code></td>
+<td>CLI 调试入口、FastAPI HTTP 入口</td>
+</tr>
+</tbody>
+</table></div>
+<h2>三、三个设计点</h2>
+<p><strong>1. 灰度开关驱动行为</strong><br />
+推理策略、工具清洗逻辑都挂在配置开关上。改行为不用改业务代码、不用重启服务，模拟真实产品的 A/B 灰度运营。</p>
+<p><strong>2. 工厂模式收敛差异</strong><br />
+统一封装各厂商的代理类，新增一家只需要实现一个代理类并注册，调度层无感。</p>
+<p><strong>3. 强类型提前拦截</strong><br />
+入参与配置都用 Pydantic 校验，非法配置在启动阶段就报错，而不是等到线上某个请求才炸。</p>
+<h2>四、怎么跑</h2>
+<pre><code class="language-bash">pip install -r requirements.txt
+
+python main.py          # 命令行本地调试，打印完整调度链路
+python api_server.py    # 启动 FastAPI HTTP 服务
+</code></pre>
+<h2>五、接口契约</h2>
+<p><code>POST /api/agent/chat</code></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>入参</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_query</code></td>
+<td>string</td>
+<td>用户问题</td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td>string | null</td>
+<td>会话标识，缺省则新建</td>
+</tr>
+<tr>
+<td><code>model_provider</code></td>
+<td>string</td>
+<td><code>azure</code> / <code>bedrock</code> / <code>minimax</code>，默认 <code>azure</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>返回 <code>{code, msg, data}</code>，<code>data</code> 内含 <code>provider</code>、<code>content</code>、<code>tool_calls</code>、<code>thinking_block</code>。异常统一走 <code>AgentBaseError</code> 分支，HTTP 400 携带异常类名，便于前端定位。</p></article></div></div></div></section><section class="panel" id="p-code"><div class="wrap"><div class="docs"><aside class="side" data-group="code"><p class="side-t">文件</p><a href="#" data-file="agent_core" class="on">agent_core.py</a><a href="#" data-file="tool_provider">tool_provider.py</a><a href="#" data-file="config_loader">config_loader.py</a><a href="#" data-file="config_const">config_const.py</a><a href="#" data-file="prompt_templates">prompt_templates.py</a><a href="#" data-file="schema">schema.py</a><a href="#" data-file="exceptions">exceptions.py</a><a href="#" data-file="utils">utils.py</a><a href="#" data-file="main">main.py</a><a href="#" data-file="api">api_server.py</a><a href="#" data-file="requirements">requirements.txt</a></aside><div class="docbox" style="padding:24px 26px 30px"><p class="meta" data-docof="code" data-key="agent_core">Agent 核心调度：组装提示词 → 调用代理 → 回收工具调用与思考块</p><p class="meta" data-docof="code" data-key="tool_provider" style=display:none>多模型代理工厂（Azure / Bedrock / Minimax）</p><p class="meta" data-docof="code" data-key="config_loader" style=display:none>配置加载、校验与单例管理</p><p class="meta" data-docof="code" data-key="config_const" style=display:none>灰度开关常量定义</p><p class="meta" data-docof="code" data-key="prompt_templates" style=display:none>动态提示词模板</p><p class="meta" data-docof="code" data-key="schema" style=display:none>Pydantic 入参 / 出参模型</p><p class="meta" data-docof="code" data-key="exceptions" style=display:none>统一业务异常</p><p class="meta" data-docof="code" data-key="utils" style=display:none>通用工具函数</p><p class="meta" data-docof="code" data-key="main" style=display:none>命令行调试入口：跑完整调度链路并打印结果</p><p class="meta" data-docof="code" data-key="api" style=display:none>FastAPI HTTP 接入层：POST /api/agent/chat</p><p class="meta" data-docof="code" data-key="requirements" style=display:none>依赖清单：pydantic / fastapi / uvicorn</p><div class="codes"><pre data-docof="code" data-key="agent_core"><code>-from .schema import AgentRequest, AgentResponse
+from .config_loader import get_gray_switch
+from .prompt_templates import build_agent_prompt
+from .tool_provider import ModelProxyFactory
+from .exceptions import VersionCheckFailedError
+
+
+class AiCreativeAgent:
+    def __init__(self):
+        pass
+
+    def _check_claude_version(self):
+        &quot;&quot;&quot;灰度：强制版本校验逻辑演示&quot;&quot;&quot;
+        if get_gray_switch(&quot;oauth_force_claude_version_check&quot;):
+            mock_current_version = &quot;claude-2.0&quot;
+            allow_version = &quot;claude-3&quot;
+            if mock_current_version != allow_version:
+                raise VersionCheckFailedError(&quot;Claude版本不匹配，请升级模型版本&quot;)
+
+    async def run(self, req: AgentRequest) -&gt; AgentResponse:
+        # 1. 灰度分支：版本校验
+        self._check_claude_version()
+
+        # 2. 根据灰度开关动态组装prompt
+        prompt = build_agent_prompt(
+            user_query=req.user_query,
+            enable_thinking_downgrade=get_gray_switch(&quot;enable_unsigned_thinking_downgrade&quot;),
+            enable_strict_tool_clean=get_gray_switch(&quot;strip_orphan_tool_block_strict&quot;)
+        )
+
+        # 3. 获取对应厂商模型代理
+        proxy = ModelProxyFactory.get_proxy(req.model_provider)
+
+        # 4. 请求大模型
+        resp = await proxy.chat_completion(prompt)
+        return resp
+</code></pre><pre data-docof="code" data-key="tool_provider" style=display:none><code>from typing import Dict
+from .schema import AgentResponse
+from .exceptions import UnsupportedProviderError, ModelProxyError
+from .config_loader import load_gray_config
+from .utils import is_provider_supported
+
+
+class BaseModelProxy:
+    &quot;&quot;&quot;第三方模型代理基类&quot;&quot;&quot;
+    async def chat_completion(self, prompt: str) -&gt; AgentResponse:
+        raise NotImplementedError
+
+
+class AzureProxy(BaseModelProxy):
+    async def chat_completion(self, prompt: str) -&gt; AgentResponse:
+        # 此处替换真实azure sdk请求逻辑
+        return AgentResponse(content=&quot;azure model reply&quot;, provider=&quot;azure&quot;)
+
+
+class MinimaxProxy(BaseModelProxy):
+    async def chat_completion(self, prompt: str) -&gt; AgentResponse:
+        return AgentResponse(content=&quot;minimax model reply&quot;, provider=&quot;minimax&quot;)
+
+
+class BedrockProxy(BaseModelProxy):
+    async def chat_completion(self, prompt: str) -&gt; AgentResponse:
+        return AgentResponse(content=&quot;bedrock model reply&quot;, provider=&quot;bedrock&quot;)
+
+
+class ModelProxyFactory:
+    _mapping: Dict[str, BaseModelProxy] = {
+        &quot;azure&quot;: AzureProxy(),
+        &quot;minimax&quot;: MinimaxProxy(),
+        &quot;bedrock&quot;: BedrockProxy()
+    }
+
+    @classmethod
+    def get_proxy(cls, provider: str) -&gt; BaseModelProxy:
+        gray_cfg = load_gray_config()
+        if not is_provider_supported(provider, gray_cfg.third_party_proxy_support):
+            raise UnsupportedProviderError(f&quot;不支持的模型厂商: {provider}&quot;)
+        instance = cls._mapping.get(provider.lower())
+        if not instance:
+            raise ModelProxyError(&quot;代理实例不存在&quot;)
+        return instance
+</code></pre><pre data-docof="code" data-key="config_loader" style=display:none><code>from pydantic import TypeAdapter
+from .config_const import PRODUCT_GRAY_CONFIG
+from .schema import GrayConfigSchema
+
+# 全局缓存解析后的灰度配置
+_GRAY_CONFIG: GrayConfigSchema | None = None
+
+def load_gray_config() -&gt; GrayConfigSchema:
+    &quot;&quot;&quot;加载并校验全局灰度配置，单例缓存&quot;&quot;&quot;
+    global _GRAY_CONFIG
+    if _GRAY_CONFIG is not None:
+        return _GRAY_CONFIG
+
+    adapter = TypeAdapter(GrayConfigSchema)
+    _GRAY_CONFIG = adapter.validate_python(PRODUCT_GRAY_CONFIG)
+    return _GRAY_CONFIG
+
+def get_gray_switch(key: str):
+    &quot;&quot;&quot;快速读取单个灰度配置&quot;&quot;&quot;
+    cfg = load_gray_config()
+    return getattr(cfg, key)
+</code></pre><pre data-docof="code" data-key="config_const" style=display:none><code># 产品灰度配置示例
+PRODUCT_GRAY_CONFIG = {
+    &quot;oauth_force_claude_version_check&quot;: True, # 灰度开关：强校验claude版本
+    &quot;strip_orphan_tool_block_strict&quot;: True, # 灰度：严格清洗孤立工具块防400报错
+    &quot;enable_unsigned_thinking_downgrade&quot;: True, # 灰度：无签名推理块降级为文本
+    &quot;third_party_proxy_support&quot;: [&quot;minimax&quot;, &quot;azure&quot;, &quot;bedrock&quot;] # 可动态新增代理厂商
+}
+</code></pre><pre data-docof="code" data-key="prompt_templates" style=display:none><code>from .utils import trim_extra_whitespace
+
+# Agent系统基础提示词
+SYSTEM_PROMPT = trim_extra_whitespace(&quot;&quot;&quot;
+你是一个具备工具调用能力的智能Agent。
+当你需要调用工具时，请输出标准工具调用格式；若无工具可调用，直接自然语言回复用户。
+&quot;&quot;&quot;)
+
+# 无签名推理块降级模板（灰度开关生效时使用）
+THINKING_DOWNGRADE_PROMPT = trim_extra_whitespace(&quot;&quot;&quot;
+检测到无签名推理块，不再启用结构化思考输出，请将思考内容融合到正文回答中。
+&quot;&quot;&quot;)
+
+# 工具清洗前置提示词
+TOOL_STRIP_PROMPT = trim_extra_whitespace(&quot;&quot;&quot;
+严格过滤孤立、残缺、无法解析的工具调用片段，防止接口返回400参数错误。
+&quot;&quot;&quot;)
+
+
+def build_agent_prompt(user_query: str, enable_thinking_downgrade: bool, enable_strict_tool_clean: bool) -&gt; str:
+    &quot;&quot;&quot;根据灰度开关动态组装Prompt&quot;&quot;&quot;
+    segments = [SYSTEM_PROMPT]
+    if enable_thinking_downgrade:
+        segments.append(THINKING_DOWNGRADE_PROMPT)
+    if enable_strict_tool_clean:
+        segments.append(TOOL_STRIP_PROMPT)
+    segments.append(f&quot;用户问题：{user_query}&quot;)
+    return &quot;\n\n&quot;.join(segments)
+</code></pre><pre data-docof="code" data-key="schema" style=display:none><code>from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+
+
+class GrayConfigSchema(BaseModel):
+    &quot;&quot;&quot;灰度配置数据模型，强约束，防止配置写错&quot;&quot;&quot;
+    oauth_force_claude_version_check: bool
+    strip_orphan_tool_block_strict: bool
+    enable_unsigned_thinking_downgrade: bool
+    third_party_proxy_support: List[str]
+
+
+class AgentRequest(BaseModel):
+    &quot;&quot;&quot;Agent接收用户请求体&quot;&quot;&quot;
+    user_query: str
+    session_id: Optional[str] = None
+    model_provider: str = Field(default=&quot;azure&quot;, description=&quot;第三方代理厂商&quot;)
+
+
+class AgentResponse(BaseModel):
+    &quot;&quot;&quot;Agent输出响应体&quot;&quot;&quot;
+    content: str
+    thinking_block: Optional[str] = None
+    tool_calls: List[Dict[str, Any]] = Field(default_factory=list)
+    provider: str
+
+
+class ToolCallBlock(BaseModel):
+    &quot;&quot;&quot;工具调用结构化块&quot;&quot;&quot;
+    tool_name: str
+    arguments: Dict[str, Any]
+</code></pre><pre data-docof="code" data-key="exceptions" style=display:none><code>class AgentBaseError(Exception):
+    &quot;&quot;&quot;Agent模块基础异常&quot;&quot;&quot;
+    pass
+
+class ModelProxyError(AgentBaseError):
+    &quot;&quot;&quot;第三方模型代理请求异常&quot;&quot;&quot;
+    pass
+
+class UnsupportedProviderError(ModelProxyError):
+    &quot;&quot;&quot;不支持的模型厂商&quot;&quot;&quot;
+    pass
+
+class VersionCheckFailedError(AgentBaseError):
+    &quot;&quot;&quot;Claude版本校验失败&quot;&quot;&quot;
+    pass
+
+class InvalidToolBlockError(AgentBaseError):
+    &quot;&quot;&quot;非法工具块格式&quot;&quot;&quot;
+    pass
+</code></pre><pre data-docof="code" data-key="utils" style=display:none><code>import json
+from typing import Any
+
+
+def safe_json_loads(text: str) -&gt; Any:
+    &quot;&quot;&quot;安全解析JSON，避免直接json.loads抛错&quot;&quot;&quot;
+    try:
+        return json.loads(text)
+    except Exception:
+        return None
+
+
+def is_provider_supported(provider: str, support_list: list[str]) -&gt; bool:
+    &quot;&quot;&quot;校验模型厂商是否在支持列表内&quot;&quot;&quot;
+    return provider.lower() in [p.lower() for p in support_list]
+
+
+def trim_extra_whitespace(text: str) -&gt; str:
+    &quot;&quot;&quot;清理多余换行与空格，用于prompt预处理&quot;&quot;&quot;
+    return &quot;\n&quot;.join(line.strip() for line in text.splitlines() if line.strip())
+</code></pre><pre data-docof="code" data-key="main" style=display:none><code>import asyncio
+from agent.agent_core import AiCreativeAgent
+from agent.schema import AgentRequest
+from agent.exceptions import AgentBaseError
+
+async def main():
+    # 1. 初始化智能Agent实例
+    agent = AiCreativeAgent()
+
+    # 2. 构造用户请求
+    request = AgentRequest(
+        user_query=&quot;帮我构思一条海外休闲游戏新版本运营活动方案&quot;,
+        session_id=&quot;session_20260714_001&quot;,
+        model_provider=&quot;azure&quot;   # 可选 minimax / azure / bedrock
+    )
+
+    try:
+        # 3. 执行Agent完整调度链路
+        result = await agent.run(request)
+
+        # 4. 打印返回结果
+        print(&quot;==== Agent 响应结果 ====&quot;)
+        print(f&quot;使用模型厂商：{result.provider}&quot;)
+        print(f&quot;模型回答内容：\n{result.content}&quot;)
+        print(f&quot;工具调用列表：{result.tool_calls}&quot;)
+        print(f&quot;推理思考块：{result.thinking_block}&quot;)
+
+    except AgentBaseError as e:
+        print(f&quot;Agent运行异常: {type(e).__name__} - {str(e)}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    asyncio.run(main())
+</code></pre><pre data-docof="code" data-key="api" style=display:none><code># api_server.py
+import asyncio
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from agent.agent_core import AiCreativeAgent
+from agent.schema import AgentRequest
+from agent.exceptions import AgentBaseError
+
+# 初始化FastAPI应用
+app = FastAPI(title=&quot;AI-Creative-Trials Agent Service&quot;, version=&quot;1.0&quot;)
+agent = AiCreativeAgent()
+
+# HTTP接收请求模型
+class AgentHttpReq(BaseModel):
+    user_query: str
+    session_id: str | None = None
+    model_provider: str = &quot;azure&quot;
+
+
+@app.post(&quot;/api/agent/chat&quot;)
+async def agent_chat(req: AgentHttpReq):
+    &quot;&quot;&quot;Agent对话接口&quot;&quot;&quot;
+    try:
+        # HTTP入参转换为内部领域模型
+        inner_req = AgentRequest(
+            user_query=req.user_query,
+            session_id=req.session_id,
+            model_provider=req.model_provider
+        )
+        resp = await agent.run(inner_req)
+        return {
+            &quot;code&quot;: 0,
+            &quot;msg&quot;: &quot;success&quot;,
+            &quot;data&quot;: resp.model_dump()
+        }
+    except AgentBaseError as e:
+        raise HTTPException(status_code=400, detail=f&quot;{type(e).__name__}: {str(e)}&quot;)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f&quot;Server Error: {str(e)}&quot;)
+if __name__ == &quot;__main__&quot;:
+    import uvicorn
+    uvicorn.run(app, host=&quot;0.0.0.0&quot;, port=8000)
+</code></pre><pre data-docof="code" data-key="requirements" style=display:none><code>pydantic&gt;=2.0
+fastapi&gt;=0.100.0
+uvicorn&gt;=0.23.2
+</code></pre></div></div></div></div></section></main>
+
+<footer><div class="wrap">
+  <span>Agent 调度框架 · Agent Framework — 单文件离线呈现，无外部依赖</span>
+  <a href="index.html">← 返回作品集</a>
+</div></footer>
+
+<script>window.__D={};</script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tabs button'));
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  function show(id){
+    panels.forEach(function(p){p.classList.toggle('on',p.id==='p-'+id)});
+    tabs.forEach(function(b){b.classList.toggle('on',b.dataset.tab===id)});
+    var p=document.getElementById('p-'+id);
+    if(p){[].slice.call(p.querySelectorAll('iframe[data-demo]')).forEach(function(f){
+      if(!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    });}
+    if(history.replaceState){history.replaceState(null,'','#'+id)}
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  tabs.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab)})});
+  [].slice.call(document.querySelectorAll('a[data-doc]')).forEach(function(a){
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var link=document.querySelector('.side a[data-file="'+a.dataset.doc+'"]');
+      if(link){show('docs');link.click();}else{show('docs')}
+    });
+  });
+  [].slice.call(document.querySelectorAll('[data-tab]')).forEach(function(el){
+    if(el.tagName==='A'){el.addEventListener('click',function(e){
+      e.preventDefault();show(el.dataset.tab);
+      if(el.getAttribute('data-view')){
+        var b=document.querySelector('.seg button[data-view="'+el.getAttribute('data-view')+'"]');
+        if(b)b.click();
+      }
+    })}
+  });
+  // 子页 iframe 的链接桥
+  window.addEventListener('message',function(e){
+    var d=e.data||{};if(d.ct!=='link')return;
+    var h=(d.href||'').toLowerCase();
+    if(/\.md$/.test(h)){
+      var base=h.split('/').pop().replace(/\.md$/,'');
+      var link=document.querySelector('.side a[data-file="'+base+'"]');
+      if(!link){
+        link=[].slice.call(document.querySelectorAll('.side a[data-alias]')).filter(function(a){
+          return (a.getAttribute('data-alias')||'').split(',').indexOf(base)>=0;
+        })[0];
+      }
+      if(link){show('docs');link.click();}
+      else{show('docs')}
+      return;
+    }
+    if(/\.html$/.test(h)||/\.mp4$/.test(h)){
+      show('demo');
+      var gd=document.querySelector('.seg button[data-view="game"]');
+      if(gd)gd.click();
+    }
+  });
+  // 演示区切换（PC / 手机等）
+  [].slice.call(document.querySelectorAll('.seg')).forEach(function(seg){
+    var btns=[].slice.call(seg.querySelectorAll('button'));
+    btns.forEach(function(b){b.addEventListener('click',function(){
+      btns.forEach(function(x){x.classList.toggle('on',x===b)});
+      var host=document.getElementById(seg.dataset.host);
+      if(!host)return;
+      [].slice.call(host.children).forEach(function(c){
+        if(c.classList.contains('view')){c.style.display=(c.dataset.view===b.dataset.view)?'':'none'}
+      });
+      var f=host.querySelector('.view:not([style*="none"]) iframe[data-demo]');
+      if(f&&!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    })});
+  });
+  // 文档 / 源码切换
+  [].slice.call(document.querySelectorAll('[data-group]')).forEach(function(side){
+    var links=[].slice.call(side.querySelectorAll('a[data-file]'));
+    links.forEach(function(a){a.addEventListener('click',function(e){
+      e.preventDefault();
+      var g=side.dataset.group;
+      links.forEach(function(x){x.classList.toggle('on',x===a)});
+      [].slice.call(document.querySelectorAll('[data-docof="'+g+'"]')).forEach(function(d){
+        d.style.display=(d.dataset.key===a.dataset.file)?'':'none';
+      });
+      if(window.innerWidth<900){
+        var cur=document.querySelector('[data-docof="'+g+'"]');
+        var vis=null;
+        [].slice.call(document.querySelectorAll('[data-docof="'+g+'"]')).forEach(function(d){
+          if(d.style.display!=='none')vis=d;
+        });
+        if(vis&&vis.scrollIntoView){vis.scrollIntoView({block:'start'})}
+      }
+    })});
+  });
+  var initial=(location.hash||'').replace('#','');
+  if(initial&&document.getElementById('p-'+initial)){show(initial)}else{
+    var first=document.querySelector('.panel.on');
+    if(first){[].slice.call(first.querySelectorAll('iframe[data-demo]')).forEach(function(f){
+      if(!f.getAttribute('srcdoc')&&window.__D&&window.__D[f.dataset.demo]){f.srcdoc=window.__D[f.dataset.demo];}
+    })}
+  }
+})();
+</script>
+</body>
+</html>
